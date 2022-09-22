@@ -1,8 +1,31 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<!DOCTYPE html>
+ <html>
+ <head>
+ <style>
+ table {
+   font-family: arial, sans-serif;
+   border-collapse: collapse;
+   width: 100%;
+ }
+ 
+ td, th {
+   border: 1px solid #dddddd;
+   text-align: left;
+   padding: 8px;
+ }
+ 
+ tr:nth-child(even) {
+   background-color: #dddddd;
+ }
+ </style>
+ </head>
+ <body>
+ 
 <h5>Nama: </h5>
-<b>{{nama}}</b>
+<p>{{nama}}</p>
 
 <table>
     <tr>
@@ -19,5 +42,11 @@
         </tr>
     {% endfor %}
 </table>
+
+<h5>Sesi terakhir login: {{ last_login }}</h5>
+<button><a href="{% url 'wishlist:logout' %}">Logout</a></button>
+
+</body>
+</html>
 
 {% endblock content %}
