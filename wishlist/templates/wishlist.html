@@ -1,6 +1,31 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">{{nama}}</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Link URLS
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'wishlist:show_xml' %}">XML</a></li>
+            <li><a class="dropdown-item" href="{% url 'wishlist:show_json' %}">JSON</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'wishlist:logout' %}">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
 <!DOCTYPE html>
  <html>
  <head>
@@ -23,10 +48,8 @@
  </style>
  </head>
  <body>
- 
-<h5>Nama: </h5>
-<p>{{nama}}</p>
 
+<br></br>
 <table>
     <tr>
     <th>Nama Barang</th>
@@ -43,8 +66,8 @@
     {% endfor %}
 </table>
 
+<br></br>
 <h5>Sesi terakhir login: {{ last_login }}</h5>
-<button><a href="{% url 'wishlist:logout' %}">Logout</a></button>
 
 </body>
 </html>
