@@ -1,16 +1,13 @@
 import datetime
-from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.shortcuts import render
-from wishlist.models import BarangWishlist
-from django.http import HttpResponse
 from django.core import serializers
-from django.shortcuts import redirect
-from django.contrib.auth.forms import UserCreationForm
+from wishlist.models import BarangWishlist
+from django.shortcuts import redirect, render
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
-from django.contrib.auth import logout
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 
 # Create your views here.
 @login_required(login_url='/wishlist/login/')
@@ -23,6 +20,26 @@ def show_wishlist(request):
     }
     return render(request, "wishlist.html", context)
 
+@login_required(login_url='/wishlist/login/')
+def show_wishlist_ajax(request):
+    data_barang_wishlist = BarangWishlist.objects.all()
+    context = {
+        'list_barang': data_barang_wishlist,
+        'nama': 'Alia Widyanita Puspaningrum',
+        'last_login': request.COOKIES['last_login'],
+    }
+    return render(request, "wishlist_ajax.html", context)
+
+def add_wishlist_ajax(request: HttpRequest):
+    if request.method == "POST":
+        nama_barang = request.POST.get("nama_barang")
+        harga_barang = request.POST.get("harga_barang")
+        deskripsi = request.POST.get("deskripsi")
+
+        BarangWishlist.objects.create(nama_barang=nama_barang,deskripsi=deskripsi,harga_barang=harga_barang)
+        response = HttpResponseRedirect(reverse("wishlist:wishlist_ajax")) 
+        return response
+
 def show_xml(request):
     data = BarangWishlist.objects.all()
     return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
@@ -34,6 +51,10 @@ def show_json(request):
 def show_json_by_id(request,id):
     data = BarangWishlist.objects.filter(pk=id)
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+def show_xml_by_id(request,id):
+    data = BarangWishlist.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
 
 def register(request):
     form = UserCreationForm()
