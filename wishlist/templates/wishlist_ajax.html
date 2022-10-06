@@ -27,88 +27,82 @@
   </div>
 </nav>
 
-<div class="container mt-4">
-    <table class="table table-dark">
-      <thead class="table-secondary">
-        <th>Nama Barang</th>
-        <th>Harga Barang</th>
-        <th>Deskripsi</th>
-      </thead>
-      {% comment %} Tambahkan data di bawah baris ini {% endcomment %}
-      <tbody id="tbl">
-  
-      </tbody>
-    </table>
-  
-    <h5>Sesi terakhir login: {{ last_login }}</h5>
-  
-    <hr />
-  
+<br>
+<div class="container justify-content-center">
     <h4>Tambah Barang</h4>
     <form method="POST" action="">
-      {% csrf_token %}
-      <table>
+        {% csrf_token %}
+        <table>
         <tr>
-          <td>Nama Barang: </td>
-          <td><input type="text" id="nama_barang" name="nama_barang" placeholder="Nama Barang" class="form-control"></td>
+            <td>Nama Barang: </td>
+            <td><input type="text" id="nama_barang" name="nama_barang" placeholder="Nama Barang" class="form-control"></td>
         </tr>
-  
+    
         <tr>
-          <td>Harga Barang: </td>
-          <td><input type="number" id="harga_barang" name="harga_barang" placeholder="Harga Barang" class="form-control"></td>
+            <td>Harga Barang: </td>
+            <td><input type="number" id="harga_barang" name="harga_barang" placeholder="Harga Barang" class="form-control"></td>
         </tr>
-  
+    
         <tr>
-          <td>Deskripsi: </td>
-          <td><textarea class="form-control" id="deskripsi" name="deskripsi"></textarea></td>
+            <td>Deskripsi: </td>
+            <td><textarea class="form-control" id="deskripsi" name="deskripsi"></textarea></td>
         </tr>
-  
+    
         <tr>
-          <td></td>
-          <td><input class="btn btn-primary" type="submit" value="Submit" id="newBtn"></td>
+            <td></td>
+            <td><button id="submit-button" class="btn btn-success mt-3">Tambah</button></td>
         </tr>
-      </table>
+        </table>
     </form>
-  </div>
-  
+</div>
+<br>
+
+<hr/>
+
+<br>
+<div class="d-flex justify-content-center">
+    <div class="daftar-barang"></div>
+</div>
+
+<br>
+<div class="d-flex justify-content-center">
+    <h5>Sesi terakhir login: {{ last_login }}</h5>
+</div>
+
+{% endblock content %}
+
+{% block meta %}
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script>
-    function postNew(e) {
-      e.preventDefault()
-      const namaBarang = $("#nama_barang").val()
-      const hargaBarang = $("#harga_barang").val()
-      const deskripsi = $("#deskripsi").val()
-  
-      const data = {
-        nama_barang: namaBarang,
-        harga_barang: hargaBarang,
-        deskripsi,
-        csrfmiddlewaretoken: "{{ csrf_token }}"
-      }
-    }
-  
-    function writeTable(data) {
-      const table = $("#tbl")
-      table.empty()
-      for (let i = 0; i < data.length; i++) {
-        table.append(`
-          <tr>
-            <td>${data[i].fields.nama_barang}</td>
-            <td>${data[i].fields.harga_barang}</td>
-            <td>${data[i].fields.deskripsi}</td>
-          </tr>
-          `)
-      }
-    }
-  
-    function fetchData() {
-      $.get("/wishlist/json", writeTable)
-    }
-  
-    $(document).ready(() => {
-      $("#newBtn").click(postNew)
-      fetchData()
-    })
-    
+    $(document).ready(function(){
+        $.get("http://localhost:8000/wishlist/json", function(data) {
+            for (let barang of data){
+                $(".daftar-barang").append(
+                    `<div class="card text-light text-bg-dark p-4 m-3">
+                        <div class="d-flex justify-content-between">
+                            <div class="">
+                                <b>${barang.fields.nama_barang}</b>
+                            </div>
+                            <div>
+                                <p style="font-size:12px;">
+                                    <i>Rp. ${barang.fields.harga_barang},-</i>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="card text-bg-dark border-light p-2" style="font-size:12px;">
+                            ${barang.fields.deskripsi}
+                        </div>
+                    </div>`)
+            }                
+        });
+        $("#submit-button").click(function() {
+            $.post("http://localhost:8000/wishlist/ajax/submit", 
+                {
+                    nama_barang: $("#nama_barang").val(),
+                    harga_barang: parseInt($("#harga_barang").val()),
+                    deskripsi: $("#deskripsi").val()
+                } 
+        )})
+    });
   </script>
-  {% endblock content %}
+{% endblock meta %}
